@@ -12,12 +12,15 @@ catalog_input = st.text_input("Catalog Number", placeholder="e.g., 10250T411C21-
 
 if catalog_input:
     try:
+        # Normalize input
+        normalized_input = catalog_input.strip().replace("-", "").upper()
+
         # Load lookup tables and catalog reference
         lookup_tables = load_csv_files()
         catalog_reference = load_catalog_reference()
 
         # Decode the catalog number
-        decoded = decode_catalog_number(catalog_input.strip(), lookup_tables, catalog_reference)
+        decoded = decode_catalog_number(normalized_input, lookup_tables, catalog_reference)
 
         # Display decoded components
         st.subheader("🧩 Decoded Components")
@@ -25,4 +28,5 @@ if catalog_input:
             st.markdown(f"**{key}**: {value}")
 
     except Exception as e:
-        st.error(f"An error occurred: {e}")
+        st.error(f"An error occurred during decoding: {e}")
+
