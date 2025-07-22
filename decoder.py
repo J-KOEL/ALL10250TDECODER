@@ -1,8 +1,10 @@
+# decoder.py
+
 import pandas as pd
 import os
 import re
 
-# Load all CSV files into a dictionary of DataFrames
+# Load all CSV files into a dictionary of DataFrames, excluding the catalog reference
 def load_csv_files():
     csv_files = [f for f in os.listdir() if f.endswith('.csv') and f != 'CatalogReference.csv']
     lookup_tables = {}
@@ -15,7 +17,17 @@ def load_csv_files():
             lookup_tables[file] = df
     return lookup_tables
 
-# Helper function to find label from code using a lookup table
+# Load the catalog reference file
+def load_catalog_reference():
+    df = pd.read_csv("CatalogReference.csv")
+    df.columns = df.columns.str.strip()
+    if 'Catalog Number' not in df.columns or 'Product Type' not in df.columns:
+        raise ValueError("CatalogReference.csv must contain 'Catalog Number' and 'Product Type' columns.")
+    df['Catalog Number'] = df['Catalog Number'].astype(str).str.strip().str.upper()
+    df['Product Type'] = df['Product Type'].astype(str).str.strip()
+    return df
+
+# Decode a component using a lookup table
 def decode_component(code, df):
     if df is not None and not df.empty:
         match = df[df['Code'] == code]
@@ -23,14 +35,7 @@ def decode_component(code, df):
             return match['Label'].values[0]
     return "Unknown"
 
-# Load catalog reference
-def load_catalog_reference():
-    df = pd.read_csv("CatalogReference.csv")
-    df['Catalog Number'] = df['Catalog Number'].str.strip().str.upper()
-    df['Product Type'] = df['Product Type'].str.strip()
-    return df
-
-# Define decoding logic based on product type
+# Decode the catalog number using the reference and lookup tables
 def decode_catalog_number(catalog, lookup_tables, catalog_reference):
     result = {"Catalog Number": catalog}
     catalog = catalog.strip().upper()
@@ -51,6 +56,7 @@ def decode_catalog_number(catalog, lookup_tables, catalog_reference):
 
     suffix = catalog[6:]
 
+    # Decode based on product type
     if product_type == "Non-Illuminated Pushbutton":
         result["Operator"] = decode_component(suffix[0], lookup_tables.get("NonIlluminatedPushbuttonOperator.csv"))
         result["Button Color"] = decode_component(suffix[1], lookup_tables.get("NonIlluminatedPushbuttonButtonColor.csv"))
@@ -95,4 +101,5 @@ def decode_catalog_number(catalog, lookup_tables, catalog_reference):
         result["Voltage"] = decode_component(suffix[5:7], lookup_tables.get("IndicatinglightLEDvoltage.csv"))
 
     return result
+
 
