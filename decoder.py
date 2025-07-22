@@ -62,9 +62,9 @@ def decode_catalog_number(catalog, lookup_tables, catalog_reference):
         result["Circuit"] = decode_component(suffix[2:], lookup_tables.get("Circuit.csv"))
 
     elif product_type == "Illuminated Incandescent Pushbutton":
-    result["Light Unit"] = decode_component(suffix[:3], lookup_tables.get("IlluminatedPushbuttonIncandescentLightUnit.csv"))
-    result["Lens Color"] = decode_component(suffix[3:6], lookup_tables.get("IlluminatedPushbuttonIncandescentLensColor.csv"))
-    result["Circuit"] = decode_component(suffix[6:], lookup_tables.get("Circuit.csv"))
+        result["Light Unit"] = decode_component(suffix[:3], lookup_tables.get("IlluminatedPushbuttonIncandescentLightUnit.csv"))
+        result["Lens Color"] = decode_component(suffix[3:6], lookup_tables.get("IlluminatedPushbuttonIncandescentLensColor.csv"))
+        result["Circuit"] = decode_component(suffix[6:], lookup_tables.get("Circuit.csv"))
 
     elif product_type == "LED Pushbutton":
         result["Light Unit"] = decode_component(suffix[:3], lookup_tables.get("IlluminatedPushbuttonLEDLightUnit.csv"))
