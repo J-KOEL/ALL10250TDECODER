@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 from decoder import load_csv_files, load_catalog_reference, decode_catalog_number
 
 # Set up the Streamlit app
@@ -11,17 +10,19 @@ st.markdown("Enter a full catalog number (e.g., `10250T411C21-C1`) to decode it 
 # Input field for catalog number
 catalog_input = st.text_input("Catalog Number", placeholder="e.g., 10250T411C21-51")
 
-# Decode and display results
 if catalog_input:
-    # Load lookup tables and catalog reference
-    lookup_tables = load_csv_files()
-    catalog_reference = load_catalog_reference()
+    try:
+        # Load lookup tables and catalog reference
+        lookup_tables = load_csv_files()
+        catalog_reference = load_catalog_reference()
 
-    # Decode the catalog number
-    decoded = decode_catalog_number(catalog_input.strip(), lookup_tables, catalog_reference)
+        # Decode the catalog number
+        decoded = decode_catalog_number(catalog_input.strip(), lookup_tables, catalog_reference)
 
-    # Display decoded components
-    st.subheader("🧩 Decoded Components")
-    for key, value in decoded.items():
-        st.markdown(f"**{key}**: {value}")
+        # Display decoded components
+        st.subheader("🧩 Decoded Components")
+        for key, value in decoded.items():
+            st.markdown(f"**{key}**: {value}")
 
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
